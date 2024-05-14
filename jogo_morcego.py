@@ -1,5 +1,5 @@
 import pygame
-from personagem import*
+import time
 from elementos import*
 
 pygame.init()
@@ -12,27 +12,31 @@ FUNDO = pygame.image.load("imagens/fundo.jpg")
 FUNDO = pygame.transform.scale(FUNDO,(800,500))
 
 #Criando mais personagens
-jogador1 = Personagem("imagens/personagem.png",80,100,700,400)
+jogador1 = Personagem("imagens/personagem.png",100,100,700,400)
 
 #Carregando as imagens
-lista_fantasma = [inimigo("imagens/fantasma.png",100,80,0,40),
-                 inimigo("imagens/fantasma.png",100,80,40,80),
-                 inimigo("imagens/fantasma.png",100,80,80,120),
-                 inimigo("imagens/fantasma.png",100,80,120,200)]
+lista_fantasma = [fantasma("imagens/fantasma.png",100,80,0,40),
+                  fantasma("imagens/fantasma.png",100,80,40,40),
+                  fantasma("imagens/fantasma.png",100,80,80,40),
+                  fantasma("imagens/fantasma.png",100,80,120,40),
+                  fantasma("imagens/fantasma.png",100,80,180,40),
+                  fantasma("imagens/fantasma.png",100,80,200,40),
+                  fantasma("imagens/fantasma.png",100,80,220,40),
+                  fantasma("imagens/fantasma.png",100,80,240,40)]
 
-lista_obstaculo=[Obstaculo("imagens/objeto.png",60,40,0,40),
-                 Obstaculo("imagens/objeto.png",60,40,40,80),
-                 Obstaculo("imagens/objeto.png",60,40,80,120)]
+lista_obstaculo=[bomba("imagens/objeto.png",60,40,0,40),
+                 bomba("imagens/objeto.png",60,40,40,80),
+                 bomba("imagens/objeto.png",60,40,80,120)]
 
-lista_bonus=[bonus("imagens/objeto.png",60,40,0,40),
-             bonus("imagens/objeto.png",60,40,40,80),
-             bonus("imagens/objeto.png",60,40,80,120),
-             bonus("imagens/objeto.png",60,40,0,40),
-             bonus("imagens/objeto.png",60,40,40,80)]
+lista_bonus=[veja("imagens/bonus.png",80,60,10,40),
+             veja("imagens/bonus.png",80,60,700,80),
+             veja("imagens/bonus.png",80,60,500,120),
+             veja("imagens/bonus.png",80,60,200,40),
+             veja("imagens/bonus.png",80,60,100,80)]
 
 #fonte
-fonte=pygame.font.SysFont("Arial",14,True,True)
-
+fonte_pontuacao=pygame.font.SysFont("Arial",20,True,True)
+fonte_perdeu=pygame.font.SysFont("Arial",40,True,True)
 #Criando um relogio para controlar o FPS
 clock = pygame.time.Clock()
 
@@ -56,28 +60,29 @@ while rodando:
         inimigo.movimenta()
         inimigo.desenhar(tela)
     
-    # movimenta e desenha todos os inimigos
+    # movimenta e desenha todos os obstaculos
     for Obstaculo in lista_obstaculo:
         Obstaculo.movimenta()
         Obstaculo.desenhar(tela)
-
+        
+        # overlap indentifica se se-tocaram
         if jogador1.mascara.overlap(Obstaculo.mascara,(Obstaculo.pos_x-jogador1.pos_x,Obstaculo.pos_y-jogador1.pos_y)):
-            jogador1.pos_x = 300
-            jogador1.pos_y = 450
-            jogador1.pontuacao -= 1
+                
+                texto_perdeu=fonte_perdeu.render(f"vc perdeu com {jogador1.pontuacao} pontos",True,(0,0,0))
+                tela.blit(texto_perdeu,(400,250))    
+                time.sleep(4)
+                rodando=False
+    # movimenta e desenha todos os itens bonus
+    for bonus in lista_bonus:
+        bonus.movimenta()
+        bonus.desenhar(tela)
 
+        # overlap indentifica se se-tocaram
+        if jogador1.mascara.overlap(bonus.mascara,(bonus.pos_x-jogador1.pos_x,bonus.pos_y-jogador1.pos_y)):
+                jogador1.pontuacao += 1
 
-    if jogador1.pos_y <= 10:
-        jogador1.pos_x = 300
-        jogador1.pos_y = 450
-        jogador1.pontuacao += 1
-    
-    texto_pontuacao_morcego=fonte.render(f"Pontuação player: {jogador1.pontuacao}",True,(0,0,0))
+    texto_pontuacao_morcego=fonte_pontuacao.render(f"Pontuação player: {jogador1.pontuacao}",True,(0,0,0))
     tela.blit(texto_pontuacao_morcego,(0,10))     
-  
-    # overlap indentifica se se-tocaram
-    if jogador1.mascara.overlap(Obstaculo.mascara,(Obstaculo.pos_x-jogador1.pos_x,Obstaculo.pos_y-jogador1.pos_y)):
-        jogador1 = Personagem("imagens/morcego1.png",80,100,700,400)
 
     #Atualizando a tela
     pygame.display.update()
