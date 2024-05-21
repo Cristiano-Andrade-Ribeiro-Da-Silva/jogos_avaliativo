@@ -68,9 +68,10 @@ while rodando:
         # overlap indentifica se se-tocaram
         if jogador1.mascara.overlap(Obstaculo.mascara,(Obstaculo.pos_x-jogador1.pos_x,Obstaculo.pos_y-jogador1.pos_y)):
                 
-                texto_perdeu=fonte_perdeu.render(f"vc perdeu com {jogador1.pontuacao} pontos",True,(0,0,0))
-                tela.blit(texto_perdeu,(400,250))    
-                time.sleep(4)
+                texto_perdeu=fonte_perdeu.render(f"vc perdeu com {jogador1.pontuacao} pontos",True,(255,255,255))
+                tela.blit(texto_perdeu,(200,150)) 
+                pygame.display.update()
+                time.sleep(2)
                 rodando=False
     # movimenta e desenha todos os itens bonus
     for bonus in lista_bonus:
@@ -89,3 +90,4 @@ while rodando:
 
     #Regulando o FPS
     clock.tick(60)
+
